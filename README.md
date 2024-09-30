@@ -34,6 +34,9 @@ With the rise of social media, individuals can share and disseminate photos glob
 
 Our solution uses deep learning to detect fake images by analyzing image data and predicting whether an image is real or manipulated. We have decided to deploy in online. It's something that can be rethought and changed, but generally knowing the problem (and the target variable to be predicted) already gives us an idea which style of deployment will generate more value for the business.
 
+![Screenshot 2024-09-30 235045](https://github.com/user-attachments/assets/f446f53e-fa99-4b55-af24-fe8e7cd32b95)
+
+
 ---
 
 ## Data Acquisition
