@@ -60,20 +60,19 @@ We have designed a comprehensive data pipeline to process our dataset, including
 
 We developed three models for detecting deep fake images, each leveraging state-of-the-art techniques in computer vision and deep learning. These models were benchmarked to provide a robust baseline and ensure continuous improvement through iterative testing.
 
-1. **Deep Residual Learning for Image Recognition**  
-   *Authors:* He, K., Zhang, X., Ren, S., & Sun, J. (2016)  
-   *[Link to Paper](https://arxiv.org/abs/1512.03385)*  
-   *Description:* This paper presents the ResNet architecture, which introduced residual learning to build deeper neural networks. We adapted ResNet for image classification in the deep fake domain.
+1. **AVFF: Audio-Visual Feature Fusion for Video Deepfake Detection**  
+   *Authors:* Oorloff, T., Koppisetti, S., Bonettini, N., Solanki, D., Colman, B., Yacoob, Y., Shahriyari, A., & Bharaj, G. (2024)
+   *[Link to Paper](https://arxiv.org/abs/2406.02951)*  
+   *Description:* This paper introduces Audio-Visual Feature Fusion (AVFF), a two-stage deepfake detection method that uses self-supervised learning to capture audio-visual correspondences, achieving state-of the-art results on the FakeAVCeleb dataset.
+2. **UCF: Uncovering Common Features for Generalizable Deepfake Detection**  
+   *Authors:* Yan, Z., Zhang, Y., Fan, Y., & Wu, B. (2023)  
+   *[Link to Paper](https://arxiv.org/abs/2304.13949)*  
+   *Description:* This paper introduces a disentanglement framework to generalize deepfake detection by uncovering common forgery features, addressing the overfitting problem and improving performance on unseen forgeries.
 
-2. **Learning Rich Features for Image Manipulation Detection**  
-   *Authors:* Zhou, P., Han, X., Morariu, V.I., & Davis, L.S. (2018)  
-   *[Link to Paper](https://arxiv.org/abs/1805.04953)*  
-   *Description:* This research focuses on detecting manipulated images by learning fine-grained features. It was utilized to enhance the image analysis capabilities of our system.
-
-3. **Fighting Fake News: Image Splice Detection via Learned Self-Consistency**  
-   *Authors:* Huh, M., Liu, A., Owens, A., & Efros, A.A. (2018)  
-   *[Link to Paper](https://arxiv.org/abs/1805.04096)*  
-   *Description:* This approach analyzes image splicing detection by modeling self-consistency within images, which helps in the detection of fake components in face-swap images.
+3. **Implicit Identity Driven Deepfake Face Swapping Detection**  
+   *Authors:* Huang, B., Wang, Z., Yang, J., Ai, J., Zou, Q., Wang, Q., & Ye, D. (2023) 
+   *[Link to Paper](https://openaccess.thecvf.com/content/CVPR2023/papers/Huang_Implicit_Identity_Driven_Deepfake_Face_Swapping_Detection_CVPR_2023_paper.pdf)*  
+   *Description:* This paper introduces a novel implicit identity-driven framework for detecting face-swapped deepfakes by exploring differences between explicit and implicit identities, significantly improving detection performance across datasets.
 
 ---
 
