@@ -71,7 +71,6 @@ We developed three models for detecting deep fake images, each leveraging state-
    *Authors:* Yan, Z., Zhang, Y., Fan, Y., & Wu, B. (2023)  
    *[Link to Paper](https://arxiv.org/abs/2304.13949)*  
    *Description:* This paper introduces a disentanglement framework to generalize deepfake detection by uncovering common forgery features, addressing the overfitting problem and improving performance on unseen forgeries.
-
 3. **Implicit Identity Driven Deepfake Face Swapping Detection**  
    *Authors:* Huang, B., Wang, Z., Yang, J., Ai, J., Zou, Q., Wang, Q., & Ye, D. (2023) 
    *[Link to Paper](https://openaccess.thecvf.com/content/CVPR2023/papers/Huang_Implicit_Identity_Driven_Deepfake_Face_Swapping_Detection_CVPR_2023_paper.pdf)*  
@@ -91,21 +90,9 @@ The UI is designed to be intuitive, with a clean layout where users can upload a
 
 ---
 
-## Expected Results
-
-Our system is expected to achieve the following:
-
-1. **Baseline Model and Benchmarking**: Create a strong baseline for measuring model performance, guiding the development of more advanced solutions.
-2. **Performance Metrics**: We aim to achieve high scores in key performance metrics such as accuracy, precision, recall, F1 score, and ROC-AUC curve.
-3. **Software Efficiency**: Optimize the system for memory usage, compute efficiency, latency, and throughput to ensure it can scale efficiently in real-world scenarios.
-4. **Iterative Testing and Cross-Validation**: The models will undergo continuous iterative testing with cross-validation to avoid overfitting and ensure consistent performance across diverse datasets.
-
----
-
 ## References
 
-Below are the key research papers that guided our model development:
+Below are the references that guided/ will guide our model development:
 
-1. **He, K., et al. (2016)** - [Deep Residual Learning for Image Recognition](https://arxiv.org/abs/1512.03385)
-2. **Zhou, P., Han, X., Morariu, V.I., & Davis, L.S. (2018)** - [Learning Rich Features for Image Manipulation Detection](https://arxiv.org/abs/1805.04953)
-3. **Huh, M., Liu, A., Owens, A., & Efros, A.A. (2018)** - [Fighting Fake News: Image Splice Detection via Learned Self-Consistency](https://arxiv.org/abs/1805.04096)
+1. **MLOps Basics** - [From Raviraja](https://deep-learning-blogs.vercel.app/blog/mlops-project-setup-part1)
+2. **MadeWithML** - [From Goku Mohandas](https://madewithml.com/)
