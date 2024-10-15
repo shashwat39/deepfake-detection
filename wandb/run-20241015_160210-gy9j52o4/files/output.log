@@ -1,0 +1,65 @@
+
+   | Name                   | Type            | Params | Mode
+--------------------------------------------------------------------
+0  | train_accuracy_metric  | BinaryAccuracy  | 0      | train
+1  | val_accuracy_metric    | BinaryAccuracy  | 0      | train
+2  | f1_metric              | BinaryF1Score   | 0      | train
+3  | precision_macro_metric | BinaryPrecision | 0      | train
+4  | recall_macro_metric    | BinaryRecall    | 0      | train
+5  | precision_micro_metric | BinaryPrecision | 0      | train
+6  | recall_micro_metric    | BinaryRecall    | 0      | train
+7  | conv1                  | Conv2d          | 224    | train
+8  | bn1                    | BatchNorm2d     | 16     | train
+9  | pool1                  | MaxPool2d       | 0      | train
+10 | conv2                  | Conv2d          | 1.6 K  | train
+11 | bn2                    | BatchNorm2d     | 16     | train
+12 | pool2                  | MaxPool2d       | 0      | train
+13 | conv3                  | Conv2d          | 3.2 K  | train
+14 | bn3                    | BatchNorm2d     | 32     | train
+15 | pool3                  | MaxPool2d       | 0      | train
+16 | conv4                  | Conv2d          | 6.4 K  | train
+17 | bn4                    | BatchNorm2d     | 32     | train
+18 | pool4                  | MaxPool2d       | 0      | train
+19 | flatten                | Flatten         | 0      | train
+20 | fc1                    | Linear          | 16.4 K | train
+21 | leaky_relu             | LeakyReLU       | 0      | train
+22 | dropout                | Dropout         | 0      | train
+23 | fc2                    | Linear          | 17     | train
+--------------------------------------------------------------------
+28.0 K    Trainable params
+0         Non-trainable params
+28.0 K    Total params
+0.112     Total estimated model params size (MB)
+24        Modules in train mode
+0         Modules in eval mode
+Sanity Checking DataLoader 0: 100%|███████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████████| 2/2 [00:11<00:00,  0.18it/s]
+Traceback (most recent call last):
+  File "C:\Users\Shashwat\OneDrive\Documents\deepfake-detection\train.py", line 64, in <module>
+    main()
+  File "C:\Users\Shashwat\OneDrive\Documents\deepfake-detection\train.py", line 60, in main
+    trainer.fit(model, train_loader, val_loader)
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\trainer\trainer.py", line 538, in fit
+    call._call_and_handle_interrupt(
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\trainer\call.py", line 47, in _call_and_handle_interrupt
+    return trainer_fn(*args, **kwargs)
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\trainer\trainer.py", line 574, in _fit_impl
+    self._run(model, ckpt_path=ckpt_path)
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\trainer\trainer.py", line 981, in _run
+    results = self._run_stage()
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\trainer\trainer.py", line 1023, in _run_stage
+    self._run_sanity_check()
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\trainer\trainer.py", line 1052, in _run_sanity_check
+    val_loop.run()
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\loops\utilities.py", line 178, in _decorator
+    return loop_run(self, *args, **kwargs)
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\loops\evaluation_loop.py", line 142, in run
+    return self.on_run_end()
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\loops\evaluation_loop.py", line 254, in on_run_end
+    self._on_evaluation_epoch_end()
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\loops\evaluation_loop.py", line 333, in _on_evaluation_epoch_end
+    call._call_callback_hooks(trainer, hook_name)
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\lightning\pytorch\trainer\call.py", line 218, in _call_callback_hooks
+    fn(trainer, trainer.lightning_module, *args, **kwargs)
+  File "C:\Users\Shashwat\OneDrive\Documents\deepfake-detection\train.py", line 25, in on_validation_epoch_end
+    df = pd.DataFrame({
+NameError: name 'pd' is not defined

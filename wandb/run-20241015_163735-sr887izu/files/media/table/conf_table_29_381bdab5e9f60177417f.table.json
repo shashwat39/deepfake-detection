@@ -1,0 +1,1 @@
+{"columns": ["Actual", "Predicted", "nPredictions"], "data": [["Real", "Real", 570.0], ["Real", "DeepFake", 8.0], ["DeepFake", "Real", 63.0], ["DeepFake", "DeepFake", 780.0]]}

@@ -1,0 +1,235 @@
+_wandb:
+    value:
+        cli_version: 0.18.3
+        m:
+            - "1": Incorrect Predictions.path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.ncols
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table.ncols
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table._type
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table.sha256
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table.artifact_path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": train/acc_step
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": train/loss_epoch
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": epoch
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": valid/loss
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": valid/recall_micro
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.nrows
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table._latest_artifact_path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table.path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table.nrows
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": train/loss_step
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": valid/recall_macro
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions._type
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": valid/acc
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": valid/f1
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": train/acc_epoch
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.sha256
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.size
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.artifact_path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": conf_table.size
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": valid/precision_micro
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": valid/precision_macro
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions._latest_artifact_path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+        python_version: 3.9.7
+        t:
+            "1":
+                - 1
+                - 9
+                - 41
+                - 55
+                - 103
+                - 106
+            "2":
+                - 1
+                - 9
+                - 41
+                - 55
+                - 103
+                - 106
+            "3":
+                - 7
+                - 23
+                - 55
+                - 66
+            "4": 3.9.7
+            "5": 0.18.3
+            "8":
+                - 3
+                - 5
+            "12": 0.18.3
+            "13": windows-amd64
+        visualize:
+            conf:
+                panel_config:
+                    fieldSettings:
+                        Actual: Actual
+                        Predicted: Predicted
+                        nPredictions: nPredictions
+                    panelDefId: wandb/confusion_matrix/v1
+                    stringSettings:
+                        title: ""
+                    transform:
+                        name: tableWithLeafColNames
+                    userQuery:
+                        queryFields:
+                            - args:
+                                - name: runSets
+                                  value: ${runSets}
+                              fields:
+                                - fields: []
+                                  name: id
+                                - fields: []
+                                  name: name
+                                - fields: []
+                                  name: _defaultColorIndex
+                                - args:
+                                    - name: tableKey
+                                      value: conf_table
+                                  fields: []
+                                  name: summaryTable
+                              name: runSets
+                panel_type: Vega2

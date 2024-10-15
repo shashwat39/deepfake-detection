@@ -1,0 +1,84 @@
+_wandb:
+    value:
+        cli_version: 0.18.3
+        m:
+            - "1": Incorrect Predictions._latest_artifact_path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.nrows
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.sha256
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.artifact_path
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.ncols
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions._type
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+            - "1": Incorrect Predictions.size
+              "5": 2
+              "6":
+                - 1
+                - 3
+              "7": []
+        python_version: 3.9.7
+        t:
+            "1":
+                - 1
+                - 9
+                - 41
+                - 55
+                - 103
+                - 106
+            "2":
+                - 1
+                - 9
+                - 41
+                - 55
+                - 103
+                - 106
+            "3":
+                - 7
+                - 23
+                - 55
+                - 66
+            "4": 3.9.7
+            "5": 0.18.3
+            "8":
+                - 3
+                - 5
+            "12": 0.18.3
+            "13": windows-amd64

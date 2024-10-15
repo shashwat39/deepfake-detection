@@ -1,0 +1,37 @@
+2024-10-15 16:31:23,329 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Current SDK version is 0.18.3
+2024-10-15 16:31:23,329 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Configure stats pid to 30516
+2024-10-15 16:31:23,329 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Loading settings from C:\Users\Shashwat\.config\wandb\settings
+2024-10-15 16:31:23,333 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Loading settings from C:\Users\Shashwat\OneDrive\Documents\deepfake-detection\wandb\settings
+2024-10-15 16:31:23,333 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Loading settings from environment variables: {}
+2024-10-15 16:31:23,333 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Applying setup settings: {'mode': None, '_disable_service': None}
+2024-10-15 16:31:23,335 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Inferring run settings from compute environment: {'program_relpath': 'train.py', 'program_abspath': 'C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\train.py', 'program': 'C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\train.py'}
+2024-10-15 16:31:23,336 INFO    MainThread:30516 [wandb_setup.py:_flush():79] Applying login settings: {}
+2024-10-15 16:31:23,336 INFO    MainThread:30516 [wandb_init.py:_log_setup():532] Logging user logs to .\wandb\run-20241015_163123-pa27mknw\logs\debug.log
+2024-10-15 16:31:23,336 INFO    MainThread:30516 [wandb_init.py:_log_setup():533] Logging internal logs to .\wandb\run-20241015_163123-pa27mknw\logs\debug-internal.log
+2024-10-15 16:31:23,336 INFO    MainThread:30516 [wandb_init.py:init():617] calling init triggers
+2024-10-15 16:31:23,336 INFO    MainThread:30516 [wandb_init.py:init():624] wandb.init called with sweep_config: {}
+config: {}
+2024-10-15 16:31:23,336 INFO    MainThread:30516 [wandb_init.py:init():667] starting backend
+2024-10-15 16:31:23,336 INFO    MainThread:30516 [wandb_init.py:init():671] sending inform_init request
+2024-10-15 16:31:23,340 INFO    MainThread:30516 [backend.py:_multiprocessing_setup():104] multiprocessing start_methods=spawn, using: spawn
+2024-10-15 16:31:23,340 INFO    MainThread:30516 [wandb_init.py:init():684] backend started and connected
+2024-10-15 16:31:23,344 INFO    MainThread:30516 [wandb_init.py:init():779] updated telemetry
+2024-10-15 16:31:23,376 INFO    MainThread:30516 [wandb_init.py:init():812] communicating run to backend with 90.0 second timeout
+2024-10-15 16:31:33,448 WARNING MainThread:30516 [wandb_init.py:init():1256] interrupted
+Traceback (most recent call last):
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\wandb\sdk\wandb_init.py", line 1252, in init
+    return wi.init()
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\wandb\sdk\wandb_init.py", line 815, in init
+    result = run_init_handle.wait(
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\wandb\sdk\lib\mailbox.py", line 283, in wait
+    found, abandoned = self._slot._get_and_clear(timeout=wait_timeout)
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\wandb\sdk\lib\mailbox.py", line 130, in _get_and_clear
+    if self._wait(timeout=timeout):
+  File "C:\Users\Shashwat\anaconda3\lib\site-packages\wandb\sdk\lib\mailbox.py", line 126, in _wait
+    return self._event.wait(timeout=timeout)
+  File "C:\Users\Shashwat\anaconda3\lib\threading.py", line 574, in wait
+    signaled = self._cond.wait(timeout)
+  File "C:\Users\Shashwat\anaconda3\lib\threading.py", line 316, in wait
+    gotit = waiter.acquire(True, timeout)
+KeyboardInterrupt
+2024-10-15 16:31:33,459 WARNING MsgRouterThr:30516 [router.py:message_loop():77] message_loop has been closed

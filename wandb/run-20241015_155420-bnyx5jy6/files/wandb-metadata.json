@@ -1,0 +1,28 @@
+{
+  "os": "Windows-10-10.0.22631-SP0",
+  "python": "3.9.7",
+  "startedAt": "2024-10-15T10:24:20.737556Z",
+  "program": "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\train.py",
+  "codePath": "train.py",
+  "email": "shashwatsrivastava2021@gmail.com",
+  "root": ".",
+  "host": "LAPTOP-8EDJ7ONH",
+  "username": "Shashwat",
+  "executable": "C:\\Users\\Shashwat\\anaconda3\\python.exe",
+  "codePathLocal": "train.py",
+  "cpu_count": 6,
+  "cpu_count_logical": 12,
+  "disk": {
+    "/": {
+      "total": "511079084032",
+      "used": "486475735040"
+    }
+  },
+  "memory": {
+    "total": "7866368000"
+  },
+  "cpu": {
+    "count": 6,
+    "countLogical": 12
+  }
+}
