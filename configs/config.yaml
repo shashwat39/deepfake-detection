@@ -1,3 +1,6 @@
+data:
+  dir: "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data"  # Path to your dataset directory
+
 model:
   name: Meso4  # Replacing the BERT model name with the Meso4 model
   input_channels: 3  # Since the model accepts RGB images (3 channels)
@@ -12,9 +15,13 @@ processing:
   normalize_std: [0.5, 0.5, 0.5]   # Standard deviation for normalization
 
 training:
-  max_epochs: 200        # Based on the number of epochs in your code
+  max_epochs: 2        # Based on the number of epochs in your code
   log_every_n_steps: 10  # Log every 10 steps (you had this in the original config)
   deterministic: true    # Ensure deterministic training
   limit_train_batches: 1.0  # Use full training dataset
   limit_val_batches: 1.0    # Use full validation dataset
   learning_rate: 0.001      # Learning rate for Adam optimizer, can be modified as needed
+
+defaults:
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog

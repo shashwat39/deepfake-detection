@@ -5,3 +5,4 @@ torchmetrics
 matplotlib
 pandas
 wandb
+onnx==1.16.1

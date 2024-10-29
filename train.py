@@ -8,6 +8,11 @@ from data import get_data_loaders
 import pandas as pd
 import hydra
 from omegaconf import OmegaConf
+import logging
+import warnings
+warnings.filterwarnings("ignore")
+
+logger = logging.getLogger(__name__)
 
 # Custom Callback for logging incorrect predictions
 class SamplesVisualisationLogger(pl.Callback):
@@ -42,7 +47,9 @@ class SamplesVisualisationLogger(pl.Callback):
 
 # NOTE: Need to provide the path for configs folder and the config file name
 @hydra.main(config_path="./configs", config_name="config")
-def main():
+def main(cfg):
+    logger.info(OmegaConf.to_yaml(cfg, resolve=True))
+    logger.info(f"Using the model: Meso4")
     checkpoint_callback = ModelCheckpoint(
         dirpath="./models", monitor="valid/loss", mode="min"
     )
@@ -57,9 +64,13 @@ def main():
 
     # Instantiate the trainer with the custom callback
     trainer = pl.Trainer(
-        max_epochs=5,
+        max_epochs=cfg.training.max_epochs,
         logger=wandb_logger,
         callbacks=[checkpoint_callback, SamplesVisualisationLogger(val_loader)],
+        log_every_n_steps=cfg.training.log_every_n_steps,
+        deterministic=cfg.training.deterministic,
+        limit_train_batches=cfg.training.limit_train_batches,
+        limit_val_batches=cfg.training.limit_val_batches,
     )
     # Train the model
     trainer.fit(model, train_loader, val_loader)

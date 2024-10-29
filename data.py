@@ -1,14 +1,18 @@
 import torch
 from torchvision import datasets, transforms
 from torch.utils.data import DataLoader
+import os
 
-def get_data_loaders(data_dir='./data', batch_size=32):
+def get_data_loaders(data_dir='C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data', batch_size=32):
     # Define transformations
     transform = transforms.Compose([
         transforms.Resize((256, 256)),
         transforms.ToTensor(),
         transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))  # Normalize to [-1, 1]
     ])
+
+    print(f"Loading data from: {data_dir}")
+    print(os.path.isdir(data_dir))
 
     # Load the dataset using ImageFolder, assuming two subdirectories 'DeepFake' and 'Real'
     dataset = datasets.ImageFolder(root=data_dir, transform=transform)
