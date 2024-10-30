@@ -51,6 +51,6 @@ if __name__ == "__main__":
 
     # Batch inference example
     images = ["C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data\\Real\\34_42.jpg",
-               "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data\\DeepFake\\114_288.jpg"]
+               "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data\\DeepFake\\114_300.jpg"]
     for img_path in images:
         print(predictor.predict(img_path))

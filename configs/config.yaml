@@ -15,7 +15,7 @@ processing:
   normalize_std: [0.5, 0.5, 0.5]   # Standard deviation for normalization
 
 training:
-  max_epochs: 2        # Based on the number of epochs in your code
+  max_epochs: 200        # Based on the number of epochs in your code
   log_every_n_steps: 10  # Log every 10 steps (you had this in the original config)
   deterministic: true    # Ensure deterministic training
   limit_train_batches: 1.0  # Use full training dataset

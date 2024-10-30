@@ -11,7 +11,7 @@ COPY . /app
 RUN pip install --no-cache-dir --upgrade pip
 
 # Install dependencies
-RUN pip install --no-cache-dir -r requirements_inference.txt
+RUN pip install -r requirements.txt
 
 # Expose the port where the FastAPI app will run
 EXPOSE 8000
