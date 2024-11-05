@@ -5,3 +5,4 @@ wandb/
 outputs/
 multirun/
 experimental_notebooks/
+venv/
