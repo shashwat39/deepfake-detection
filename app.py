@@ -36,7 +36,6 @@ async def home_page():
 
 @app.post("/predict")
 async def get_prediction(file: UploadFile = File(...)):
-    
     os.makedirs('./temp', exist_ok=True)
     
     # Save the uploaded file temporarily
@@ -47,6 +46,14 @@ async def get_prediction(file: UploadFile = File(...)):
     # Get prediction
     result = predictor.predict(file_path)
     
+    # Convert result to standard Python types
     result = convert_to_standard_type(result)
-        
-    return {"predictions": result}
+    
+    # Select the prediction with the highest score
+    highest_confidence_prediction = max(result, key=lambda x: x['score'])
+    
+    # Return only the most confident prediction with label and confidence
+    return {
+        "label": highest_confidence_prediction['label'],
+        "confidence": highest_confidence_prediction['score'] * 100  # Convert to percentage
+    }

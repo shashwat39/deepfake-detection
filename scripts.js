@@ -44,56 +44,62 @@ function handleFiles(files) {
     }
 }
 
-// Prevent form submission on button click
-submitBtn.addEventListener('click', async function (event) {
-    event.preventDefault(); // Prevent any form submission behavior
+// Prevent default refresh behavior on button click
+function classifyImage(event) {
+    
+    event.preventDefault(); // Important to prevent any default behavior
+
     submitBtn.disabled = true;
     submitBtn.innerText = 'Classifying...';
 
-    // Get the uploaded file from fileElem
+    // Check if there’s a file selected before proceeding
     const file = fileElem.files[0];
+    if (!file) {
+        console.log("No file")
+        errorMessage.textContent = 'Please upload a file before classifying.';
+        submitBtn.disabled = false;
+        submitBtn.innerText = 'Classify Image';
+        return;
+    }
 
     // Create a FormData object to send the file
     const formData = new FormData();
     formData.append("file", file);
 
-    try {
-        // Send a POST request to the FastAPI /predict endpoint
-        const response = await fetch("http://127.0.0.1:8000/predict", {
-            method: "POST",
-            body: formData
-        });
-
+    // Fetch request to FastAPI
+    fetch("http://127.0.0.1:8000/predict", {
+        method: "POST",
+        body: formData
+    })
+    .then(response => {
         if (!response.ok) {
             throw new Error("Prediction failed. Please try again.");
         }
-
-        const data = await response.json();
-
-        // Display the result from the API response
-        resultText.innerText = data.predictions; // assuming the result is in data.predictions
-        confidence.innerText = `Confidence: ${data.confidence}%`; // assuming confidence is in the API response
-
+        return response.json();
+    })
+    .then(data => {
+        console.log("Data received from API:", data);
+        resultText.innerText = data.label; // Display the label
+        confidence.innerText = `Confidence: ${data.confidence.toFixed(2)}%`; // Display the confidence
         resultContainer.style.display = 'block';
-    
-    } 
-    catch (error) {
+
+        submitBtn.style.display = 'none';
+
+    })
+    .catch(error => {
+        // Handle any errors here
+        console.log("Error occured")
         errorMessage.textContent = error.message;
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = 'Classify Image';
-    }
-});
+    });
+}
+
+submitBtn.addEventListener('click', classifyImage);
+
 
 // Reset the page for a new image upload
 function resetPage() {
-    preview.innerHTML = '';
-    submitBtn.style.display = 'none';
-    submitBtn.disabled = false;
-    resultContainer.style.display = 'none';
-    errorMessage.textContent = '';
-    submitBtn.innerText = 'Classify Image';
+    location.reload();
 }
 
 // Optional: Add reset button functionality to start over
-//document.getElementById('resetBtn').addEventListener('click', resetPage);
+document.getElementById('resetBtn').addEventListener('click', resetPage);
