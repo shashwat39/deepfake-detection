@@ -3,6 +3,7 @@
 ## Project Overview
 
 This project aims to develop a deep learning-based solution for detecting face-swap deep fake images. With the rapid rise of social media platforms, fake or edited images are increasingly being used to spread misinformation, causing significant harm. Our goal is to create an efficient image classification system capable of accurately identifying deep fake images. This solution can be scaled for real-world applications, ensuring robustness and efficiency in terms of both computational and memory usage.
+You can try our model [here](https://deepfake-detection-atog.onrender.com/).
 
 ## Team Members
 
@@ -39,7 +40,10 @@ Our solution uses deep learning to detect fake images by analyzing image data an
 
 ## Data Sources
 
-Our dataset comprises a mix of publicly available resources for real and deep fake images. However, due to computational constraints, we performed **weighted sampling** to create a manageable dataset for training purposes. Below are the links to the data sources we utilized:
+Our dataset comprises of two publicly available datasets - [CIFAKE](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images) and the other one is a custom dataset given in MesoNet's paper which can be downloaded from [here](https://my.pcloud.com/publink/show?code=XZLGvd7ZI9LjgIy7iOLzXBG5RNJzGFQzhTRy).
+
+
+We plan to further train our models on these further datasets in future. We didn't due to lack of compute.
 
 1. **[deepfake and real images](https://www.kaggle.com/datasets/manjilkarki/deepfake-and-real-images?resource=download)** - This dataset contains manipulated images and real images. The manipulated images are the faces which are created by various means. Each image is a 256 X 256 jpg image of human face either real or fake.
 2. **[Real and Fake Face Detection](https://www.kaggle.com/datasets/ciplab/real-and-fake-face-detection)** - This dataset contains expert-generated high-quality photoshopped face images. The images are composite of different faces, separated by eyes, nose, mouth, or whole face.
@@ -55,18 +59,17 @@ We developed three models for detecting deep fake images, each leveraging state-
    *Authors:* Afchar, D., Nozick, V., Yamagishi, J., Echizen, I. (2018)
    *[Link to Paper](https://arxiv.org/pdf/1809.00888)*  
    *Description:* This paper presents a method to automatically and efficiently detect face tampering in videos, and particularly focuses on two recent techniques used to generate hyper-realistic forged videos: Deepfake and Face2Face.
-2. **AVFF: Audio-Visual Feature Fusion for Video Deepfake Detection**  
-   *Authors:* Oorloff, T., Koppisetti, S., Bonettini, N., Solanki, D., Colman, B., Yacoob, Y., Shahriyari, A., & Bharaj, G. (2024)
-   *[Link to Paper](https://arxiv.org/abs/2406.02951)*  
-   *Description:* This paper introduces Audio-Visual Feature Fusion (AVFF), a two-stage deepfake detection method that uses self-supervised learning to capture audio-visual correspondences, achieving state-of the-art results on the FakeAVCeleb dataset.
-3. **UCF: Uncovering Common Features for Generalizable Deepfake Detection**  
-   *Authors:* Yan, Z., Zhang, Y., Fan, Y., & Wu, B. (2023)  
-   *[Link to Paper](https://arxiv.org/abs/2304.13949)*  
-   *Description:* This paper introduces a disentanglement framework to generalize deepfake detection by uncovering common forgery features, addressing the overfitting problem and improving performance on unseen forgeries.
-4. **Implicit Identity Driven Deepfake Face Swapping Detection**  
-   *Authors:* Huang, B., Wang, Z., Yang, J., Ai, J., Zou, Q., Wang, Q., & Ye, D. (2023) 
-   *[Link to Paper](https://openaccess.thecvf.com/content/CVPR2023/papers/Huang_Implicit_Identity_Driven_Deepfake_Face_Swapping_Detection_CVPR_2023_paper.pdf)*  
-   *Description:* This paper introduces a novel implicit identity-driven framework for detecting face-swapped deepfakes by exploring differences between explicit and implicit identities, significantly improving detection performance across datasets.
+   
+2. **Swin Transformer: Hierarchical Vision Transformer Using Shifted Windows**
+   *Authors:* Liu, Z., Lin, Y., Cao, Y., Hu, H., Wei, Y., Zhang, Z., & Lin, S. (2021)  
+   *[Link to Paper](https://arxiv.org/pdf/2103.14030)*
+   *Description:*  The Swin Transformer introduces a novel hierarchical vision transformer that leverages shifted windows for efficient computation. By partitioning the image into non-overlapping windows and shifting them at each layer, it improves both local and global representation learning, resulting in state-of-the-art performance on various computer vision tasks, including image classification and object detection.
+
+3. **Deepfake Detection with Deep Learning: Convolutional Neural Networks versus Transformers**  
+   *Authors:* Vrizlynn L. L. Thing (2024)  
+   *[Link to Paper](https://arxiv.org/pdf/2304.03698)*
+   *Description:*
+   This paper explores the rapid evolution of deepfake creation technologies and investigates the effectiveness of deep learning models, specifically Convolutional Neural Networks (CNNs) and Transformers, for detecting deepfakes. The author identifies and develops eight promising deep learning architectures, testing them on various well-established deepfake datasets, including FF++, Google DFD, Celeb-DF, Deeper Forensics, and DFDC. The study achieves impressive results, with detection accuracies and AUC scores of up to 100% on several datasets, while also analyzing the strengths of CNNs and Transformers in deepfake detection and cross-dataset evaluations.
 
 ---
 
@@ -78,7 +81,7 @@ A key part of our project is the user-facing interface, which allows end users t
 ![Screenshot 2024-10-03 163459](https://github.com/user-attachments/assets/6366dca8-26e9-4b1b-b123-feb7cb6fc2eb)
 
 
-The UI is designed to be intuitive, with a clean layout where users can upload an image and view results in real-time. It includes a dashboard to visualize key statistics and confidence scores generated by the models.
+The UI is designed to be intuitive, with a clean layout where users can upload an image and view results in real-time. It includes a confidence score generated by the models.
 
 ---
 
