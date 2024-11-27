@@ -5,14 +5,15 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 import os
 import numpy as np
-from inference_onnx import DeepfakeONNXPredictor
+from onxx.inference_onnx import DeepfakeONNXPredictor
+
 
 
 app = FastAPI(title="Deepfake Detection API")
 
-
 app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+
+templates = Jinja2Templates(directory="frontend")
 
 
 app.add_middleware(
@@ -24,7 +25,7 @@ app.add_middleware(
 )
 
 
-MODEL_PATH = "./models/model_3.onnx"
+MODEL_PATH = "./model/Meso4/checkpoints/best_model.onnx"
 
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"ONNX model not found at {MODEL_PATH}")

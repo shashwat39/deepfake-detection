@@ -1,7 +1,7 @@
 import torch
 from torchvision import transforms
 from PIL import Image
-from model import Meso4
+from model.Meso4.model import Meso4
 import time
 
 def load_image(image_path):
@@ -37,7 +37,7 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
 
-    args.model_path = "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\models\\epoch=4-step=890.ckpt"
+    args.model_path = r'model/Meso4/checkpoints/epoch=150-step=26878.ckpt'
 
     t_start = time.time()
     result = inference(args.image_path, args.model_path)

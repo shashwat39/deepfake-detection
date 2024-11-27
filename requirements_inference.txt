@@ -1,7 +1,0 @@
-fastapi==0.115.4
-uvicorn==0.32.0
-numpy==1.26.4
-onnxruntime==1.19.2
-pillow==10.4.0
-scipy==1.13.1
-torch==2.4.1  # Only if needed for certain utility functions
