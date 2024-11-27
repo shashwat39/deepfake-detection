@@ -24,7 +24,7 @@ app.add_middleware(
 )
 
 # Initialize model predictor
-MODEL_PATH = "./models/model.onnx"
+MODEL_PATH = "./models/model_3.onnx"
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"ONNX model not found at {MODEL_PATH}")
 predictor = DeepfakeONNXPredictor(MODEL_PATH)

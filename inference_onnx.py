@@ -45,12 +45,27 @@ class DeepfakeONNXPredictor:
 
 if __name__ == "__main__":
     # Example usage
-    image_path = "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data\\DeepFake\\114_78.jpg"
-    predictor = DeepfakeONNXPredictor("./models/model.onnx")
+    image_path = r'C:\Users\Shashwat\Downloads\10c57b68-3bf8-4073-a4f2-748420c97134.jpg'
+    predictor = DeepfakeONNXPredictor("./models/model_3.onnx")
     print(predictor.predict(image_path))
 
     # Batch inference example
-    images = ["C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data\\Real\\34_42.jpg",
-               "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data\\DeepFake\\114_300.jpg"]
-    for img_path in images:
-        print(predictor.predict(img_path))
+    from more_dummy import top_images
+    # Initialize the counter
+    real_higher_count = 0
+
+    # Iterate through all the image paths in top_images
+    for img_path in top_images:
+        # Get prediction result for the image
+        prediction = predictor.predict(img_path)
+        
+        # Extract the 'Real' and 'Deepfake' scores
+        deepfake_score = next(item['score'] for item in prediction if item['label'] == 'Deepfake')
+        real_score = next(item['score'] for item in prediction if item['label'] == 'Real')
+        
+        # Check if the 'Real' score is greater than the 'Deepfake' score
+        if real_score > deepfake_score:
+            real_higher_count += 1
+
+    # Output the result
+    print(f'Number of images where "Real" score is higher than "Deepfake": {real_higher_count}')
