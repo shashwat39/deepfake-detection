@@ -44,12 +44,12 @@ class DeepfakeONNXPredictor:
 
 if __name__ == "__main__":
     
-    image_path = r'C:\Users\Shashwat\Downloads\10c57b68-3bf8-4073-a4f2-748420c97134.jpg'
-    predictor = DeepfakeONNXPredictor("./models/model_3.onnx")
+    image_path = r'C:\Users\Siddhartha\Pictures\Screenshots\Screenshot 2024-11-08 175504.png'
+    predictor = DeepfakeONNXPredictor('F:\Codes\deepfake-detection - Copy\model\Meso4\checkpoints\best_model.onnx')
     print(predictor.predict(image_path))
 
    
-    from more_dummy import top_images
+    from experiments.dummy import top_images
     
     real_higher_count = 0
 

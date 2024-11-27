@@ -1,5 +1,5 @@
 data:
-  dir: "C:\\Users\\Shashwat\\OneDrive\\Documents\\deepfake-detection\\data"  # Path to your dataset directory
+  dir: 'F:\\Codes\\deepfake-detection - Copy\\dataset'  # Path to your dataset directory
 
 model:
   name: Meso4  # Replacing the BERT model name with the Meso4 model

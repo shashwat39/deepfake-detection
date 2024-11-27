@@ -2,7 +2,7 @@ import torch
 import hydra
 import logging
 from omegaconf import OmegaConf
-from model import Meso4 
+from model.Meso4.model import Meso4 
 from data import get_data_loaders 
 
 import warnings
@@ -16,8 +16,8 @@ logging.basicConfig(level=logging.INFO)
 def convert_model(cfg):
     
     root_dir = hydra.utils.get_original_cwd()
-    model_path = f"{root_dir}/models/epoch=150-step=26878.ckpt"
-    onnx_output_path = f"{root_dir}/models/model_3.onnx"
+    model_path = r'F:\Codes\deepfake-detection - Copy\model\Meso4\checkpoints\epoch=150-step=26878.ckpt'
+    onnx_output_path = r'F:\Codes\deepfake-detection - Copy\model\Meso4\checkpoints\best_model.onnx'
     
     logger.info(f"Loading pre-trained model from: {model_path}")
     

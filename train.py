@@ -3,8 +3,8 @@ import lightning.pytorch as pl
 from lightning.pytorch.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import WandbLogger
 import wandb
-from model import Meso4
-from data import get_data_loaders
+from model.Meso4.model import Meso4
+from data.data_loader import get_data_loaders
 import pandas as pd
 import hydra
 from omegaconf import OmegaConf
