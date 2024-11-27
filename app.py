@@ -23,7 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Initialize model predictor
+# Initialize model predictorw
 
 MODEL_PATH = "./models/model_3.onnx"
 
