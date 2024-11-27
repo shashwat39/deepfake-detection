@@ -9,25 +9,25 @@ def is_image(file_path):
 
 def get_top_50_images(directory):
     """Return the raw file paths of the top 50 most recent images in a directory."""
-    # Ensure the directory exists
+    
     if not os.path.isdir(directory):
         raise ValueError(f"The path {directory} is not a valid directory.")
 
-    # Get all files in the directory
+    
     all_files = [f for f in Path(directory).iterdir() if f.is_file()]
 
-    # Filter the image files
+   
     image_files = [f for f in all_files if is_image(f)]
 
-    # Sort the image files by modification time, in descending order
+   
     image_files.sort(key=lambda f: f.stat().st_mtime, reverse=True)
 
-    # Get the top 50 most recently modified images
+    
     top_images = image_files[:1000]
 
-    # Return the raw string paths
+    
     return [str(image) for image in top_images]
 
-# Example usage:
-directory = r'C:\Users\Shashwat\Downloads\dataset\train\FAKE'  # Change this to your target directory
+
+directory = r'C:\Users\Shashwat\Downloads\dataset\train\FAKE'  
 top_images = get_top_50_images(directory)
