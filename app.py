@@ -24,7 +24,9 @@ app.add_middleware(
 )
 
 # Initialize model predictor
+
 MODEL_PATH = "./models/model_3.onnx"
+
 if not os.path.exists(MODEL_PATH):
     raise FileNotFoundError(f"ONNX model not found at {MODEL_PATH}")
 predictor = DeepfakeONNXPredictor(MODEL_PATH)
@@ -65,7 +67,7 @@ async def get_prediction(file: UploadFile = File(...)):
     Returns:
         JSONResponse: Predicted label and confidence score.
     """
-    # Ensure the temp directory exists for temporary file storage
+
     temp_dir = "./temp"
     os.makedirs(temp_dir, exist_ok=True)
     

@@ -101,5 +101,6 @@ function resetPage() {
     location.reload();
 }
 
-// Optional: Add reset button functionality to start over
+
 document.getElementById('resetBtn').addEventListener('click', resetPage);
+
