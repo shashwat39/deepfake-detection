@@ -1,7 +1,7 @@
 import torch
 import lightning.pytorch as pl
 from lightning.pytorch.callbacks import ModelCheckpoint
-from pytorch_lightning.loggers import WandbLogger
+from lightning.pytorch.loggers import WandbLogger
 import wandb
 from model.Meso4.model import Meso4
 from data.data_loader import get_data_loaders
@@ -10,8 +10,9 @@ import hydra
 from omegaconf import OmegaConf
 import logging
 import warnings
-warnings.filterwarnings("ignore")
+import os
 
+warnings.filterwarnings("ignore")
 logger = logging.getLogger(__name__)
 
 
@@ -21,47 +22,51 @@ class SamplesVisualisationLogger(pl.Callback):
         self.val_dataloader = val_dataloader
 
     def on_validation_epoch_end(self, trainer, pl_module):
-        
-        val_batch = next(iter(self.val_dataloader))
-        images, labels = val_batch
+        pl_module.eval()
+        with torch.no_grad():
+            images, labels = next(iter(self.val_dataloader))
 
-        
-        outputs = pl_module(images)
-        preds = (torch.sigmoid(outputs) > 0.5).int()
+            images = images.to(pl_module.device)
+            labels = labels.to(pl_module.device)
 
-       
-        df = pd.DataFrame({
-            "Image": [f"Image_{i}" for i in range(len(labels))],
-            "True Label": labels.cpu().numpy().flatten(),
-            "Predicted Label": preds.cpu().numpy().flatten()
-        })
+            outputs = pl_module(images)
+            preds = (torch.sigmoid(outputs) > 0.5).int()
 
-       
-        wrong_preds = df[df["True Label"] != df["Predicted Label"]]
+            df = pd.DataFrame({
+                "Image": [f"Image_{i}" for i in range(len(labels))],
+                "True Label": labels.cpu().numpy().flatten(),
+                "Predicted Label": preds.cpu().numpy().flatten()
+            })
 
-        
-        trainer.logger.experiment.log({
-            "Incorrect Predictions": wandb.Table(dataframe=wrong_preds)
-        })
+            wrong_preds = df[df["True Label"] != df["Predicted Label"]]
+
+            if len(wrong_preds) > 0:
+                trainer.logger.experiment.log({
+                    "Incorrect Predictions": wandb.Table(dataframe=wrong_preds)
+                })
 
 
-@hydra.main(config_path="./configs", config_name="config")
+@hydra.main(config_path="configs", config_name="config", version_base=None)
 def main(cfg):
-    logger.info(OmegaConf.to_yaml(cfg, resolve=True))
-    logger.info(f"Using the model: Meso4")
+    print(OmegaConf.to_yaml(cfg))
+    os.makedirs("models", exist_ok=True)
+
     checkpoint_callback = ModelCheckpoint(
-        dirpath="./models", monitor="valid/loss", mode="min"
+        dirpath="models",
+        monitor="valid/loss",
+        mode="min",
+        filename="meso4-{epoch:02d}-{valid_loss:.4f}"
     )
 
-    wandb_logger = WandbLogger(project="deepfake-detection")
+    wandb_logger = WandbLogger(
+        project="deepfake-detection",
+        log_model=True
+    )
 
-    
     train_loader, val_loader = get_data_loaders()
 
-    
     model = Meso4()
 
-    
     trainer = pl.Trainer(
         max_epochs=cfg.training.max_epochs,
         logger=wandb_logger,
@@ -70,8 +75,10 @@ def main(cfg):
         deterministic=cfg.training.deterministic,
         limit_train_batches=cfg.training.limit_train_batches,
         limit_val_batches=cfg.training.limit_val_batches,
+        accelerator="auto",
+        devices="auto"
     )
-    
+
     trainer.fit(model, train_loader, val_loader)
 
 
