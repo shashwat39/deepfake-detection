@@ -1,46 +1,46 @@
-import torch
-from torchvision import transforms
-from PIL import Image
-from model.Meso4.model import Meso4
+import argparse
 import time
 
-def load_image(image_path):
-    transform = transforms.Compose([
-        transforms.Resize((256, 256)),
-        transforms.ToTensor(),
-        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
-    ])
-    image = Image.open(image_path).convert('RGB')
-    return transform(image).unsqueeze(0)  # Add batch dimension
+import torch
+from PIL import Image
+from torchvision import transforms
 
-def inference(image_path, model_path):
-    model = Meso4.load_from_checkpoint(model_path)
+from model.Meso4.model import Meso4
+
+
+def load_image(image_path, image_size=256):
+    transform = transforms.Compose([
+        transforms.Resize((image_size, image_size)),
+        transforms.ToTensor(),
+        transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
+    ])
+    image = Image.open(image_path).convert("RGB")
+    return transform(image).unsqueeze(0)
+
+
+def inference(image_path, model_path, device=None):
+    device = device or ("mps" if torch.backends.mps.is_available() else "cpu")
+    model = Meso4().to(device)
+    ckpt = torch.load(model_path, map_location=device)
+    model.load_state_dict(ckpt["model_state_dict"])
     model.eval()
-    
-    image = load_image(image_path)
-    
+
+    image = load_image(image_path).to(device)
     with torch.no_grad():
-        output = model(image)
-        prediction = torch.sigmoid(output).item()
-    
-    if prediction < 0.5:
-        return "DeepFake"
-    else:
-        return "Real"
+        logit = model(image).squeeze(1)
+        prob_fake = torch.sigmoid(logit).item()
+
+    label = "Fake" if prob_fake >= 0.5 else "Real"
+    confidence = prob_fake if prob_fake >= 0.5 else 1 - prob_fake
+    return {"label": label, "confidence": round(confidence, 4)}
+
 
 if __name__ == "__main__":
-    import argparse
-
-    parser = argparse.ArgumentParser(description="DeepFake Detection Inference")
-    parser.add_argument('--image_path', type=str, required=True, help="Path to the image for inference")
-    parser.add_argument('--model_path', type=str, help="Path to the trained model checkpoint")
-    
+    parser = argparse.ArgumentParser(description="Deepfake Detection Inference")
+    parser.add_argument("--image_path", type=str, required=True)
+    parser.add_argument("--model_path", type=str, default="models/meso4/best.pt")
     args = parser.parse_args()
-
-    args.model_path = r'model/Meso4/checkpoints/epoch=150-step=26878.ckpt'
 
     t_start = time.time()
     result = inference(args.image_path, args.model_path)
-    t_end = time.time()
-    print(t_end - t_start)
-    print(f"Inference result: {result}")
+    print(f"Inference result: {result} ({time.time() - t_start:.2f}s)")

@@ -1,0 +1,16 @@
+.git
+.github
+.venv
+venv
+__pycache__
+*.pyc
+.DS_Store
+data/raw_parquet
+dataset
+wandb
+models/*/best.pt
+models/*/results.json
+models/*/test_metrics.json
+models/latency_benchmark.json
+models/load_test_results.json
+docker

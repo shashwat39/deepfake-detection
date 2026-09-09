@@ -1,0 +1,72 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies (CPU torch)
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          grep -vE '^torch(gvision)?' requirements.txt > /tmp/req-no-torch.txt
+          pip install -r /tmp/req-no-torch.txt
+          pip install pytest ruff httpx
+
+      - name: Lint
+        run: ruff check .
+
+      - name: Tests
+        run: pytest tests/ -q
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Export ONNX from random-init weights (smoke artifact for image build)
+        run: |
+          pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+          grep -vE '^torch(gvision)?' requirements.txt > /tmp/req-no-torch.txt
+          pip install -r /tmp/req-no-torch.txt onnx onnxscript onnxruntime
+          PYTHONPATH=. python - <<'EOF'
+          import torch, scripts.export_onnx as e
+          import torch.onnx, onnx
+          from model.Meso4.model import build_model
+          torch.onnx.export(
+              build_model().eval(), torch.randn(1, 3, 256, 256),
+              "models/meso4/model.onnx", export_params=True, opset_version=17,
+              input_names=["input"], output_names=["logits"],
+              dynamic_axes={"input": {0: "batch"}, "logits": {0: "batch"}})
+          proto = onnx.load("models/meso4/model.onnx", load_external_data=True)
+          onnx.save(proto, "models/meso4/model.onnx")
+          EOF
+
+      - name: Build image
+        run: docker build -f docker/Dockerfile -t deepfake-api:ci .
+
+      - name: Smoke test container
+        run: |
+          docker run -d --rm --name ci-api -p 8000:8000 deepfake-api:ci
+          for i in $(seq 1 15); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8000/docs || true)
+            [ "$code" = "200" ] && break
+            sleep 2
+          done
+          test "$code" = "200"
+          docker stop ci-api

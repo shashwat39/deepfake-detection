@@ -1,20 +1,17 @@
-from torchvision import models
 import torch.nn as nn
-def build_model(fine_tune=True, num_classes=10):
-    model = models.swin_t(weights='DEFAULT')
-    print(model)
+from torchvision import models
+
+
+def build_model(num_classes=1, fine_tune=True, weights="DEFAULT"):
+    """Swin-T with a binary head. Outputs raw logits of shape (B, 1)."""
+    model = models.swin_t(weights=weights)
+
     if fine_tune:
-        print('[INFO]: Fine-tuning all layers...')
         for params in model.parameters():
             params.requires_grad = True
-    if not fine_tune:
-        print('[INFO]: Freezing hidden layers...')
+    else:
         for params in model.parameters():
             params.requires_grad = False
-    
-    model.head = nn.Linear(
-        in_features=768, 
-        out_features=num_classes, 
-        bias=True
-    )
+
+    model.head = nn.Linear(in_features=768, out_features=num_classes, bias=True)
     return model

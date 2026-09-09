@@ -1,93 +1,193 @@
-# DL-Based Solution for Detection of Face-Swap Deep Fake Photos
+# DL-Based Detection of GAN-Generated Face Images
 
-## Project Overview
+End-to-end deepfake-image detection service: train CNN and Vision Transformer detectors on the
+[140k Real and Fake Faces](https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces)
+benchmark (70k real FFHQ photographs vs 70k StyleGAN-generated faces), evaluate them honestly on a
+held-out test split, export to ONNX, and serve them behind a load-tested FastAPI API with bounded
+concurrency and load shedding.
 
-This project aims to develop a deep learning-based solution for detecting face-swap deep fake images. With the rapid rise of social media platforms, fake or edited images are increasingly being used to spread misinformation, causing significant harm. Our goal is to create an efficient image classification system capable of accurately identifying deep fake images. This solution can be scaled for real-world applications, ensuring robustness and efficiency in terms of both computational and memory usage.
-You can try our model [here](https://deepfake-detection-atog.onrender.com/).
-
-## Team Members
-
-| Name                        | Role                      | GitHub Profile                           |
-|-----------------------------|---------------------------|------------------------------------------|
-| **Ashish Tirupati Bollam**   | Backend Engineer           | [ashish4bollam](https://github.com/ashish4bollam)  |
-| **Pragya Gupta**             | ML/MLOps Engineer          | [iampragyagupta](https://github.com/iampragyagupta)    |
-| **Rohan Nijhawan**           | Data Engineer              | [Rohan-1704](https://github.com/Rohan-1704)      |
-| **Samarth Malhotra**         | DevOps Engineer            | [samarthgh](https://github.com/samarthgh)  |
-| **Shashwat Srivastava**      | Data Scientist             | [shashwat39](https://github.com/shashwat39)|
-| **Siddhartha Arora**         | Software Engineer          | [siddhartha254](https://github.com/siddhartha254)|
+A live demo of an earlier iteration was hosted on Render; see [Reproducing](#reproducing) to run
+everything locally.
 
 ---
 
-## Table of Contents
-1. [Problem Statement](#problem-statement)
-2. [Data Sources](#data-sources)
-3. [Model Development](#model-development)
-4. [User Interface](#user-interface)
-5. [References](#references)
+## Results
+
+All numbers are from held-out **test** splits the models never saw during training or model
+selection. Splits are the dataset's official ones; seed = 42; positive class = fake.
+
+| Model | Params | Test Acc | ROC-AUC | F1 | Latency p50 (MPS / CPU) | Throughput |
+|---|---|---|---|---|---|---|
+| Meso4 (Afchar et al., 2018) | 28K | 88.6% | 0.9555 | 0.889 | 1.8 ms / 3.6 ms | ~540 img/s (MPS) |
+| Swin-T (fine-tuned) | 27.5M | **99.7%** | **1.000** | **0.997** | 31 ms / 96 ms | ~32 img/s (MPS) |
+
+Swin-T confusion matrix on 10,000 test images (rows = truth, cols = prediction, order fake/real):
+
+```
+              pred fake   pred real
+truth fake        4996          4
+truth real          28       4972
+```
+
+### Serving performance (FastAPI + ONNX Runtime CPU, M4 Mac)
+
+Measured with `scripts/load_test.py` while training another model was running — i.e. under
+realistic contention.
+
+| Concurrent clients | p50 | p95 | p99 | Throughput |
+|---|---|---|---|---|
+| 1 | 3.2 ms | 3.7 ms | 4.2 ms | 305 rps |
+| 4 | 5.8 ms | 7.6 ms | 8.6 ms | 679 rps |
+| 16 | 20 ms | 23 ms | 23 ms | 756 rps |
+| 32 | 37 ms | 44 ms | 46 ms | 738 rps |
+| 128 | 98 ms | 120 ms | 123 ms | 1053 rps |
+
+Throughput saturates around ~750–1000 rps with 4 inference workers; beyond saturation, queueing
+latency grows while throughput stays flat, as expected.
+
+### Backpressure & load shedding
+
+`api/app.py` implements explicit admission control:
+
+- A bounded semaphore caps in-flight requests at `INFERENCE_WORKERS + MAX_QUEUE` (default 4 + 64).
+- Requests wait at most `QUEUE_TIMEOUT_S` (default 2 s) for a slot; past that they get
+  **503 + Retry-After** instead of piling up unboundedly.
+- The ONNX Runtime session is pinned to `intra_op_num_threads=INFERENCE_WORKERS` so concurrent
+  inferences don't oversubscribe the CPU.
+
+With Meso4 (~3 ms/request) the shed path never triggers — the server drains faster than requests
+arrive even at 128 concurrent clients. The mechanism is sized for heavier models (Swin-T is
+~100 ms/request on CPU) where it becomes necessary.
 
 ---
 
-## Problem Statement
+## Honest scope statement
 
-With the rise of social media, individuals can share and disseminate photos globally within seconds. However, this has given rise to the propagation of manipulated or fake images, including deep fakes, which can mislead users and contribute to the spread of misinformation. The problem is amplified by the increasing sophistication of deep fake technology, making it difficult for the human eye to detect forgeries.
+This detects **StyleGAN-generated faces**, not face-swap deepfakes generally (FaceForensics++,
+Celeb-DF, DFDC). The 1.000 ROC-AUC is *in-domain* — same generator family as training. Published
+work shows such models drop sharply cross-dataset; evaluating that generalization gap is the
+natural next step and is why the README does not claim universal deepfake detection.
 
-Our solution uses deep learning to detect fake images by analyzing image data and predicting whether an image is real or manipulated. We have decided to deploy in online. It's something that can be rethought and changed, but generally knowing the problem (and the target variable to be predicted) already gives us an idea which style of deployment will generate more value for the business.
+---
 
-![Screenshot 2024-09-30 235045](https://github.com/user-attachments/assets/f446f53e-fa99-4b55-af24-fe8e7cd32b95)
+## Architecture
+
+```
+dataset/ (ImageFolder: train|val|test × real|fake)
+   │
+   ├── scripts/prepare_data.py      parquet → JPEG folder tree (official splits preserved)
+   │
+train.py                            PyTorch training loop (Meso4 or Swin-T), seeded,
+   │                                best checkpoint by val ROC-AUC → models/<name>/best.pt
+   │
+evaluate.py                         test-set metrics → JSON (acc, P/R/F1, ROC-AUC, confusion matrix)
+   │
+scripts/export_onnx.py              ONNX export, opset 17, dynamic batch axis
+   │
+api/app.py                          FastAPI: in-memory preprocessing (no disk writes),
+                                    ONNX Runtime inference, bounded concurrency + load shedding
+   │
+scripts/load_test.py                concurrent client load test → latency percentiles
+scripts/benchmark_latency.py        single-request device benchmarks (CPU/MPS/CUDA)
+
+tests/test_smoke.py                 pytest suite (shapes, transform parity, ONNX round-trip)
+.github/workflows/ci.yml            ruff + pytest + Docker build & container smoke test
+docker/Dockerfile                   CPU-only, non-root, healthchecked serving image
+```
+
+Models live in `model/Meso4/model.py` and `model/SwinTransformer/model.py`. Both output raw logits;
+sigmoid gives P(fake). Loss is `BCEWithLogitsLoss` (no double-sigmoid bugs).
+
+### Experiment tracking (Weights & Biases)
+
+Training is W&B-integrated but opt-in — the pipeline runs fully offline without an account:
+
+```bash
+pip install wandb
+wandb login                      # or skip and use offline mode:
+WANDB_MODE=offline python train.py --model meso4 --epochs 50 --wandb
+```
+
+Logged per run: config + hyperparameters, epoch-level loss/metric curves, best-val-AUC marker,
+final test metrics with an interactive confusion matrix, and the trained checkpoint as a versioned
+W&B artifact.
+
+### Serving configuration
+
+The API picks its model via environment variables (`docker/docker-compose.yml` sets them too):
+
+| Variable | Default | Meaning |
+|---|---|---|
+| `MODEL_PATH` | `models/meso4/model.onnx` | ONNX file to serve (`models/swin/model.onnx` for Swin-T) |
+| `INFERENCE_WORKERS` | `4` | inference threads / concurrent inferences |
+| `MAX_QUEUE` | `64` | extra waiting slots before shedding |
+| `QUEUE_TIMEOUT_S` | `2.0` | max wait before 503 |
+
+### Tests & CI
+
+`tests/test_smoke.py` covers model output shapes, parameter budget, exact train/serve transform
+parity, ONNX round-trip, and dataset loader splits. `.github/workflows/ci.yml` runs lint (ruff) +
+pytest on every push, then builds the Docker image and smoke-tests the container's `/docs`
+endpoint — the image build is gated on tests passing.
+
+### Docker
+
+```bash
+docker build -f docker/Dockerfile -t deepfake-api .
+docker run --rm -p 8000:8000 deepfake-api                                   # Meso4 (~3ms)
+docker run --rm -p 8000:8000 -e MODEL_PATH=models/swin/model.onnx deepfake-api   # Swin-T
+# or
+docker compose -f docker/docker-compose.yml up
+```
+
+CPU-only torch wheels, non-root user, healthcheck; ~2.5 GB with both models baked in.
 
 
 ---
 
-## Data Sources
+## Reproducing
 
-Our dataset comprises of two publicly available datasets - [CIFAKE](https://www.kaggle.com/datasets/birdy654/cifake-real-and-ai-generated-synthetic-images) and the other one is a custom dataset given in MesoNet's paper which can be downloaded from [here](https://my.pcloud.com/publink/show?code=XZLGvd7ZI9LjgIy7iOLzXBG5RNJzGFQzhTRy).
+Requires Python 3.12+. On Apple Silicon, training uses MPS automatically.
 
+```bash
+# 1. Environment
+uv venv --python 3.12 .venv
+uv pip install --python .venv/bin/python torch torchvision scikit-learn pillow \
+    pyarrow tqdm onnx onnxruntime onnxscript "fastapi[standard]" python-multipart jinja2 uvicorn
 
-We plan to further train our models on these further datasets in future. We didn't due to lack of compute.
+# 2. Data (~1 GB download → 36,667 images)
+curl -L -o data/raw_parquet/train-0.parquet \
+  https://huggingface.co/datasets/TheKernel01/140k-Real-and-Fake-Faces/resolve/main/data/train-00000-of-00006.parquet
+curl -L -o data/raw_parquet/validation-0.parquet \
+  https://huggingface.co/datasets/TheKernel01/140k-Real-and-Fake-Faces/resolve/main/data/validation-00000-of-00002.parquet
+curl -L -o data/raw_parquet/test-0.parquet \
+  https://huggingface.co/datasets/TheKernel01/140k-Real-and-Fake-Faces/resolve/main/data/test-00000-of-00002.parquet
+python scripts/prepare_data.py
 
-1. **[deepfake and real images](https://www.kaggle.com/datasets/manjilkarki/deepfake-and-real-images?resource=download)** - This dataset contains manipulated images and real images. The manipulated images are the faces which are created by various means. Each image is a 256 X 256 jpg image of human face either real or fake.
-2. **[Real and Fake Face Detection](https://www.kaggle.com/datasets/ciplab/real-and-fake-face-detection)** - This dataset contains expert-generated high-quality photoshopped face images. The images are composite of different faces, separated by eyes, nose, mouth, or whole face.
-3. **[140k Real and Fake Faces](https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces)** - This dataset consists of all 70k REAL faces from the Flickr dataset collected by Nvidia, as well as 70k fake faces sampled from the 1 Million FAKE faces (generated by StyleGAN) that was provided by Bojan.
+# 3. Train (Meso4 minutes; Swin-T ~7 min/epoch on M4 Pro-class GPU)
+python train.py --model meso4 --epochs 50 --batch-size 64
+python train.py --model swin  --epochs 8  --batch-size 32 --lr 1e-4
 
----
+# 4. Evaluate + export + serve + load test
+python evaluate.py --model swin
+PYTHONPATH=. python scripts/export_onnx.py --model meso4
+uvicorn api.app:app --port 8000
+python scripts/load_test.py --url http://127.0.0.1:8000 --n 64
 
-## Model Development
+# Single-image CLI inference
+python inference.py --image_path some_face.jpg --model_path models/meso4/best.pt
+```
 
-We developed three models for detecting deep fake images, each leveraging state-of-the-art techniques in computer vision and deep learning. These models were benchmarked to provide a robust baseline and ensure continuous improvement through iterative testing.
-
-1. **MesoNet: a Compact Facial Video Forgery Detection Network**
-   *Authors:* Afchar, D., Nozick, V., Yamagishi, J., Echizen, I. (2018)
-   *[Link to Paper](https://arxiv.org/pdf/1809.00888)*  
-   *Description:* This paper presents a method to automatically and efficiently detect face tampering in videos, and particularly focuses on two recent techniques used to generate hyper-realistic forged videos: Deepfake and Face2Face.
-   
-2. **Swin Transformer: Hierarchical Vision Transformer Using Shifted Windows**
-   *Authors:* Liu, Z., Lin, Y., Cao, Y., Hu, H., Wei, Y., Zhang, Z., & Lin, S. (2021)  
-   *[Link to Paper](https://arxiv.org/pdf/2103.14030)*
-   *Description:*  The Swin Transformer introduces a novel hierarchical vision transformer that leverages shifted windows for efficient computation. By partitioning the image into non-overlapping windows and shifting them at each layer, it improves both local and global representation learning, resulting in state-of-the-art performance on various computer vision tasks, including image classification and object detection.
-
-3. **Deepfake Detection with Deep Learning: Convolutional Neural Networks versus Transformers**  
-   *Authors:* Vrizlynn L. L. Thing (2024)  
-   *[Link to Paper](https://arxiv.org/pdf/2304.03698)*
-   *Description:*
-   This paper explores the rapid evolution of deepfake creation technologies and investigates the effectiveness of deep learning models, specifically Convolutional Neural Networks (CNNs) and Transformers, for detecting deepfakes. The author identifies and develops eight promising deep learning architectures, testing them on various well-established deepfake datasets, including FF++, Google DFD, Celeb-DF, Deeper Forensics, and DFDC. The study achieves impressive results, with detection accuracies and AUC scores of up to 100% on several datasets, while also analyzing the strengths of CNNs and Transformers in deepfake detection and cross-dataset evaluations.
-
----
-
-## User Interface
-
-A key part of our project is the user-facing interface, which allows end users to easily upload images and receive predictions about their authenticity.
-
-**User Interface Screenshot:**
-![Screenshot 2024-10-03 163459](https://github.com/user-attachments/assets/6366dca8-26e9-4b1b-b123-feb7cb6fc2eb)
-
-
-The UI is designed to be intuitive, with a clean layout where users can upload an image and view results in real-time. It includes a confidence score generated by the models.
+Artifacts per run land in `models/<name>/`: `best.pt`, `results.json`, `test_metrics.json`,
+`model.onnx`, plus `models/latency_benchmark.json` and `models/load_test_results.json`.
 
 ---
 
 ## References
 
-Below are the references that guided/ will guide our model development:
-
-1. **MLOps Basics** - [From Raviraja](https://deep-learning-blogs.vercel.app/blog/mlops-project-setup-part1)
-2. **MadeWithML** - [From Goku Mohandas](https://madewithml.com/)
+1. Afchar et al., *MesoNet: a Compact Facial Video Forgery Detection Network* (2018) —
+   <https://arxiv.org/pdf/1809.00888>
+2. Liu et al., *Swin Transformer: Hierarchical Vision Transformer Using Shifted Windows* (2021) —
+   <https://arxiv.org/pdf/2103.14030>
+3. Dataset: 70k FFHQ real faces vs StyleGAN fakes —
+   <https://www.kaggle.com/datasets/xhlulu/140k-real-and-fake-faces>

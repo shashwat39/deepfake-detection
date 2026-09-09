@@ -4,3 +4,8 @@ outputs/
 multirun/
 experiments/
 venv/
+.venv/
+data/raw_parquet/
+dataset/
+models/
+__pycache__/

@@ -1,7 +1,13 @@
-version: '3'
 services:
   deepfake_api:
-    build: .
-    container_name: 'deepfake_detector'
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: deepfake_detector
     ports:
-      - '8000:8000'
+      - "8000:8000"
+    environment:
+      INFERENCE_WORKERS: "4"
+      MAX_QUEUE: "64"
+      QUEUE_TIMEOUT_S: "2.0"
+    restart: unless-stopped
